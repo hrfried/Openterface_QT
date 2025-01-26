@@ -7,6 +7,8 @@ project(
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
+include(cmake/OpenterfaceUtils.cmake)
+
 find_package(QT NAMES Qt5 Qt6 REQUIRED COMPONENTS Core)
 find_package(
   Qt${QT_VERSION_MAJOR} REQUIRED
@@ -18,6 +20,29 @@ find_package(
              SerialPort
              Svg)
 find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Widgets)
+
+
+# must go before the project()/enable_language() commands
+openterface_update(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
+if(NOT DEFINED CMAKE_BUILD_TYPE
+    AND NOT OPENTERFACE_SKIP_DEFAULT_BUILD_TYPE
+)
+  message(STATUS "'Release' build type is used by default. Use CMAKE_BUILD_TYPE to specify build type (Release or Debug)")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build")
+endif()
+if(DEFINED CMAKE_BUILD_TYPE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${CMAKE_CONFIGURATION_TYPES}")
+endif()
+
+# --------------------------------
+# Openterface Build Options
+# --------------------------------
+OPENTERFACE_OPTION(BUILD_WITH_DEBUG_INFO    "Include debug info into release binaries ('OFF' means default settings)" OFF )
+OPENTERFACE_OPTION(ENABLE_CCACHE              "Use ccache"                                               (UNIX AND (CMAKE_GENERATOR MATCHES "Makefile" OR CMAKE_GENERATOR MATCHES "Ninja" OR CMAKE_GENERATOR MATCHES "Xcode")) )
+# --------------------------------
+# End Openterface Build Options
+# --------------------------------
+
 
 qt_standard_project_setup()
 
