@@ -5,3 +5,4 @@ aqtinstall.log
 debug/*
 .vscode
 openterfaceQT.pro.user*
+.ignore/*
